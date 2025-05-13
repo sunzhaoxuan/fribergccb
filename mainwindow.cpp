@@ -6,6 +6,8 @@
 #include <QJsonObject>
 #include <QTime>
 #include <QDebug>
+#include <QBrush>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -17,6 +19,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->suggestionlist->setStyleSheet("QListWidget { border: 1px solid gray; background: white; }");
     ui->suggestionlist->hide();
+    ui->suggestionlist->raise();
+    ui->countlabel->setText("剩余次数:10");
+
+    ui->restartButton->hide();
+
+    ui->historylist->setItemDelegate(new GuessItemDelegate(this));
+    qRegisterMetaType<GuessResult>("GuessResult");
 
     srand(QTime::currentTime().msec());
     LoadCharacters();
@@ -56,40 +65,50 @@ void MainWindow::LoadCharacters()
         }
         characters.append(c);
     }
+
 }
 
-
-void MainWindow::DisplayTags(const Character &guess)
-{
-    QString info;
-    for(const QString &tag : guess.tags)
-    {
-        if(answer.tags.contains(tag)){
-            info += "<span style='color:green'>" + tag + "</span><br>";
-        }
-        else
-        {
-            info += tag + "<br>";
-        }
-    }
-    ui->resultlabel->setText(info);
-}
 
 void MainWindow::on_guessButton_clicked()
 {
+
     QString input = ui->lineEdit->text().trimmed();
-    for(const Character &c : characters)
+    Character *matched = nullptr;
+
+    for(Character &c : characters)
     {
-        if(c.name == input)
+        if(c.name.trimmed() == input)
         {
-            DisplayTags(c);
+            matched = &c;
+            break;
         }
     }
-    if(input != answer.name)
-    {
-        QString currentText = ui->resultlabel->text();
-        ui->resultlabel->setText(currentText + "人物不正确");
+
+    currentGuessCount++;
+
+    ui->countlabel->setText("剩余次数:"+QString::number(10 - currentGuessCount));
+
+    GuessResult result = GameLogic::processGuess(*matched, answer);
+
+    QListWidgetItem* item = new QListWidgetItem();
+    item->setData(Qt::UserRole, QVariant::fromValue(result));
+    item->setSizeHint(QSize(300, 80));
+    ui->historylist->addItem(item);
+
+    if (matched->name == answer.name) {
+        QMessageBox::information(this, "Win!", "你猜对了！人物是：" + answer.name);
+        ui->guessButton->setEnabled(false);
+        ui->lineEdit->setEnabled(false);
+        ui->surrenderButton->hide();
+        ui->restartButton->show();
     }
+
+    if (currentGuessCount >= maxGuesses) {
+        QMessageBox::information(this, "Lose!", "很遗憾，你没有猜中，正确答案是：" + answer.name);
+        ui->lineEdit->setEnabled(false);
+        ui->guessButton->setEnabled(false);
+    }
+
     return;
 }
 
@@ -137,10 +156,10 @@ void MainWindow::UpdateSuggestionsSlot(const QString &text)
 
     int shown = 0;
     for (const auto &pair : results) {
-        if (pair.first > 3) break;  //模糊匹配程度
+        if (pair.first > 5) break;  //模糊匹配程度
         ui->suggestionlist->addItem(pair.second.name);
         shown++;
-        if (shown >= 5) break;
+        if (shown >= 5) break;  //显示条目数
     }
 
     ui->suggestionlist->setVisible(shown > 0);
@@ -156,5 +175,42 @@ void MainWindow::onSuggestionClickedSlot(QListWidgetItem *item)
     ui->lineEdit->clear();
 
     ui->suggestionlist->hide();
+}
+
+
+void MainWindow::on_restartButton_clicked()
+{
+    ui->historylist->clear();
+
+    ui->guessButton->setEnabled(true);
+
+    ui->lineEdit->setEnabled(true);
+
+    ui->lineEdit->clear();
+
+    ui->surrenderButton->show();
+
+    ui->restartButton->hide();
+
+    ui->countlabel->setText("剩余次数:10");
+
+    currentGuessCount = 0;
+}
+
+
+void MainWindow::on_surrenderButton_clicked()
+{
+    ui->suggestionlist->hide();
+
+    QMessageBox::information(this, "Lose!", "没想到吧！人物是：" + answer.name);
+
+    ui->guessButton->setEnabled(false);
+
+    ui->lineEdit->setEnabled(false);
+
+    ui->surrenderButton->hide();
+
+    ui->restartButton->show();
+
 }
 

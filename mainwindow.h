@@ -1,6 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "character.h"
+#include "guessresult.h"
+#include "gamelogic.h"
+#include "guessitemdelegate.h"
 #include <QMainWindow>
 #include <QVector>
 #include <QStringList>
@@ -12,11 +16,6 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
-struct Character{
-    QString name;
-    QStringList tags;
-};
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -27,8 +26,14 @@ public:
 
 private slots:
     void on_guessButton_clicked();
+
     void UpdateSuggestionsSlot(const QString &text);
+
     void onSuggestionClickedSlot(QListWidgetItem *item);
+
+    void on_restartButton_clicked();
+
+    void on_surrenderButton_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -37,5 +42,7 @@ private:
     void DisplayTags(const Character& guess);
     QVector<Character> characters;
     Character answer;
+    int maxGuesses = 10;
+    int currentGuessCount = 0;
 };
 #endif // MAINWINDOW_H
