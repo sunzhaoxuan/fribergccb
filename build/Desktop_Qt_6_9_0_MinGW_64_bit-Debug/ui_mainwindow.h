@@ -30,6 +30,10 @@ public:
     QPushButton *guessButton;
     QLabel *resultlabel;
     QListWidget *suggestionlist;
+    QListWidget *historylist;
+    QPushButton *restartButton;
+    QPushButton *surrenderButton;
+    QLabel *countlabel;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -42,17 +46,31 @@ public:
         centralwidget->setObjectName("centralwidget");
         lineEdit = new QLineEdit(centralwidget);
         lineEdit->setObjectName("lineEdit");
-        lineEdit->setGeometry(QRect(50, 80, 441, 51));
+        lineEdit->setGeometry(QRect(50, 20, 441, 51));
         guessButton = new QPushButton(centralwidget);
         guessButton->setObjectName("guessButton");
-        guessButton->setGeometry(QRect(540, 80, 191, 51));
+        guessButton->setGeometry(QRect(550, 20, 191, 51));
         resultlabel = new QLabel(centralwidget);
         resultlabel->setObjectName("resultlabel");
-        resultlabel->setGeometry(QRect(50, 180, 681, 341));
+        resultlabel->setGeometry(QRect(510, 140, 261, 111));
         suggestionlist = new QListWidget(centralwidget);
         suggestionlist->setObjectName("suggestionlist");
-        suggestionlist->setGeometry(QRect(50, 130, 441, 121));
+        suggestionlist->setGeometry(QRect(50, 70, 441, 121));
         suggestionlist->setProperty("showDropIndicator", QVariant(true));
+        historylist = new QListWidget(centralwidget);
+        historylist->setObjectName("historylist");
+        historylist->setGeometry(QRect(50, 160, 701, 381));
+        historylist->setSelectionMode(QAbstractItemView::SelectionMode::NoSelection);
+        historylist->setWordWrap(true);
+        restartButton = new QPushButton(centralwidget);
+        restartButton->setObjectName("restartButton");
+        restartButton->setGeometry(QRect(470, 100, 131, 41));
+        surrenderButton = new QPushButton(centralwidget);
+        surrenderButton->setObjectName("surrenderButton");
+        surrenderButton->setGeometry(QRect(470, 100, 131, 41));
+        countlabel = new QLabel(centralwidget);
+        countlabel->setObjectName("countlabel");
+        countlabel->setGeometry(QRect(190, 100, 241, 41));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
@@ -72,6 +90,9 @@ public:
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
         guessButton->setText(QCoreApplication::translate("MainWindow", "\347\241\256\345\256\232", nullptr));
         resultlabel->setText(QString());
+        restartButton->setText(QCoreApplication::translate("MainWindow", "\351\207\215\346\226\260\345\274\200\345\247\213", nullptr));
+        surrenderButton->setText(QCoreApplication::translate("MainWindow", "\346\212\225\351\231\215", nullptr));
+        countlabel->setText(QString());
     } // retranslateUi
 
 };
