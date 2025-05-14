@@ -5,14 +5,19 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QTimer>
 
 void Character::fetchDetailsFromApi()
 {
     QNetworkAccessManager manager;
     QEventLoop loop;
-    QString url = QString("https://api.bgm.tv/v0/characters/%1").arg(id);
 
-    QNetworkReply* reply = manager.get(QNetworkRequest(QUrl(url)));
+    QNetworkRequest request(QUrl("https://api.bgm.tv/v0/characters/" + QString::number(id)));
+    request.setHeader(QNetworkRequest::UserAgentHeader, "GuessCharacterGame/1.0");
+    request.setRawHeader("Connection", "close");
+
+    QNetworkReply *reply = manager.get(request);
+
     QObject::connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
     loop.exec();
 
@@ -38,5 +43,14 @@ void Character::fetchDetailsFromApi()
         imageUrl = images["grid"].toString();
     }
 
+}
+
+QJsonObject Character::toJson() const {
+    QJsonObject obj;
+    obj["id"] = id;
+    obj["name"] = name;
+    obj["tags"] = QJsonArray::fromStringList(tags);
+    obj["imageUrl"] = imageUrl;
+    return obj;
 }
 

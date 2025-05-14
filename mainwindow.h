@@ -46,5 +46,8 @@ private:
     Character answer;
     int maxGuesses = 5;
     int currentGuessCount = 0;
+
+protected:
+    void keyPressEvent(QKeyEvent* event) override;
 };
 #endif // MAINWINDOW_H

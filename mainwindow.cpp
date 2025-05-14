@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QBrush>
 #include <QMessageBox>
+#include <QKeyEvent>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -20,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->suggestionlist->setStyleSheet("QListWidget { border: 1px solid gray; background: white; }");
     ui->suggestionlist->hide();
     ui->suggestionlist->raise();
+
     ui->countlabel->setText("剩余次数:5");
 
     ui->restartButton->hide();
@@ -60,6 +62,8 @@ void MainWindow::LoadCharacters()
         Character c;
         c.name = obj["name"].toString();
         c.id = obj["id"].toInt();
+        c.pinyinFull = obj["pinyinFull"].toString();
+        c.pinyinInitials = obj["pinyinInitials"].toString();
         QJsonArray tags = obj["tags"].toArray();
         for (const QJsonValue &t : tags) {
             c.tags << t.toString();
@@ -141,8 +145,17 @@ void MainWindow::UpdateSuggestionsSlot(const QString &text)
     }
 
     QVector<QPair<int, Character>> results;
+
+    bool isAlphaInput = std::all_of(input.begin(), input.end(), [](QChar ch) { //判断是否英文输入
+        return ch.isLetter();
+    });
+
     for (const Character &c : characters) {
-        int score = levenshteinDistance(input, c.name);
+        int nameScore = levenshteinDistance(input, c.name);
+        int initialsScore = c.pinyinInitials.isEmpty() ? 100 : levenshteinDistance(input, c.pinyinInitials.toLower());
+        int fullPinyinScore = c.pinyinFull.isEmpty() ? 100 : levenshteinDistance(input, c.pinyinFull.toLower());
+
+        int score = std::min({nameScore, initialsScore, fullPinyinScore});
         results.append({score, c});
     }
 
@@ -159,6 +172,8 @@ void MainWindow::UpdateSuggestionsSlot(const QString &text)
     }
 
     ui->suggestionlist->setVisible(shown > 0);
+
+    ui->suggestionlist->setCurrentRow(0);
 }
 
 void MainWindow::onSuggestionClickedSlot(QListWidgetItem *item)
@@ -211,3 +226,35 @@ void MainWindow::ongameend(bool success)
     ui->restartButton->show();
 }
 
+void MainWindow::keyPressEvent(QKeyEvent* event) {
+    if (!ui->suggestionlist->isVisible()) {
+        QMainWindow::keyPressEvent(event);
+        return;
+    }
+
+    int currentRow = ui->suggestionlist->currentRow();
+    int totalItems = ui->suggestionlist->count();
+
+    switch (event->key()) {
+    case Qt::Key_Down:
+        ui->suggestionlist->setCurrentRow((currentRow + 1) % totalItems);
+        break;
+
+    case Qt::Key_Up:
+        ui->suggestionlist->setCurrentRow((currentRow - 1 + totalItems) % totalItems);
+        break;
+
+    case Qt::Key_Return:
+    case Qt::Key_Enter: {
+        QListWidgetItem *item = ui->suggestionlist->currentItem();
+        if (item) {
+            onSuggestionClickedSlot(item);
+        }
+        break;
+    }
+
+    default:
+        QMainWindow::keyPressEvent(event);
+        break;
+    }
+}

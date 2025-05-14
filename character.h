@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QStringList>
+#include <QJsonObject>
 
 class Character{
 public:
@@ -10,8 +11,11 @@ public:
     QString name;
     QStringList tags;
     QString imageUrl;
+    QString pinyinFull;
+    QString pinyinInitials;
 
     void fetchDetailsFromApi();
+    QJsonObject toJson() const;
 };
 
 #endif // CHARACTER_H
