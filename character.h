@@ -4,11 +4,14 @@
 #include <QString>
 #include <QStringList>
 
-struct Character {
+class Character{
+public:
     int id;
     QString name;
     QStringList tags;
-};
+    QString imageUrl;
 
+    void fetchDetailsFromApi();
+};
 
 #endif // CHARACTER_H

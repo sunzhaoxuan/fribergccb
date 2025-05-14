@@ -5,6 +5,7 @@
 #include "guessresult.h"
 #include "gamelogic.h"
 #include "guessitemdelegate.h"
+#include "gameendmsg.h"
 #include <QMainWindow>
 #include <QVector>
 #include <QStringList>
@@ -40,9 +41,10 @@ private:
     void LoadCharacters();
     int levenshteinDistance(const QString &s1, const QString &s2);
     void DisplayTags(const Character& guess);
+    void ongameend(bool success);
     QVector<Character> characters;
     Character answer;
-    int maxGuesses = 10;
+    int maxGuesses = 5;
     int currentGuessCount = 0;
 };
 #endif // MAINWINDOW_H

@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->suggestionlist->setStyleSheet("QListWidget { border: 1px solid gray; background: white; }");
     ui->suggestionlist->hide();
     ui->suggestionlist->raise();
-    ui->countlabel->setText("剩余次数:10");
+    ui->countlabel->setText("剩余次数:5");
 
     ui->restartButton->hide();
 
@@ -59,10 +59,12 @@ void MainWindow::LoadCharacters()
         QJsonObject obj = val.toObject();
         Character c;
         c.name = obj["name"].toString();
+        c.id = obj["id"].toInt();
         QJsonArray tags = obj["tags"].toArray();
         for (const QJsonValue &t : tags) {
             c.tags << t.toString();
         }
+        c.fetchDetailsFromApi();
         characters.append(c);
     }
 
@@ -86,7 +88,7 @@ void MainWindow::on_guessButton_clicked()
 
     currentGuessCount++;
 
-    ui->countlabel->setText("剩余次数:"+QString::number(10 - currentGuessCount));
+    ui->countlabel->setText("剩余次数:"+QString::number(5 - currentGuessCount));
 
     GuessResult result = GameLogic::processGuess(*matched, answer);
 
@@ -96,17 +98,11 @@ void MainWindow::on_guessButton_clicked()
     ui->historylist->addItem(item);
 
     if (matched->name == answer.name) {
-        QMessageBox::information(this, "Win!", "你猜对了！人物是：" + answer.name);
-        ui->guessButton->setEnabled(false);
-        ui->lineEdit->setEnabled(false);
-        ui->surrenderButton->hide();
-        ui->restartButton->show();
+        ongameend(true);
     }
 
     if (currentGuessCount >= maxGuesses) {
-        QMessageBox::information(this, "Lose!", "很遗憾，你没有猜中，正确答案是：" + answer.name);
-        ui->lineEdit->setEnabled(false);
-        ui->guessButton->setEnabled(false);
+        ongameend(false);
     }
 
     return;
@@ -192,25 +188,26 @@ void MainWindow::on_restartButton_clicked()
 
     ui->restartButton->hide();
 
-    ui->countlabel->setText("剩余次数:10");
+    ui->countlabel->setText("剩余次数:5");
 
     currentGuessCount = 0;
+
+    answer = characters[rand() % characters.size()];
 }
 
 
 void MainWindow::on_surrenderButton_clicked()
 {
+    ongameend(false);
+}
+
+void MainWindow::ongameend(bool success)
+{
+    showEndGameDialog(success, answer);
     ui->suggestionlist->hide();
-
-    QMessageBox::information(this, "Lose!", "没想到吧！人物是：" + answer.name);
-
-    ui->guessButton->setEnabled(false);
-
     ui->lineEdit->setEnabled(false);
-
+    ui->guessButton->setEnabled(false);
     ui->surrenderButton->hide();
-
     ui->restartButton->show();
-
 }
 

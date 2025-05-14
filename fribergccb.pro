@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     character.cpp \
+    gameendmsg.cpp \
     gamelogic.cpp \
     guessitemdelegate.cpp \
     guessresult.cpp \
@@ -18,6 +19,7 @@ SOURCES += \
 
 HEADERS += \
     character.h \
+    gameendmsg.h \
     gamelogic.h \
     guessitemdelegate.h \
     guessresult.h \
