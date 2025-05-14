@@ -293,7 +293,7 @@ void MainWindow::UpdateSuggestionsSlot(const QString &text)
         if (pair.first > 5) break;  //模糊匹配程度
         ui->suggestionlist->addItem(pair.second.name);
         shown++;
-        if (shown >= 5) break;  //显示条目数
+        if (shown >= 10) break;  //显示条目数
     }
 
     ui->suggestionlist->setVisible(shown > 0);
