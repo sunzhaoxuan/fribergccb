@@ -34,6 +34,7 @@ public:
     QPushButton *restartButton;
     QPushButton *surrenderButton;
     QLabel *countlabel;
+    QPushButton *statsButton;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -41,7 +42,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName("MainWindow");
-        MainWindow->resize(800, 600);
+        MainWindow->resize(799, 638);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
         lineEdit = new QLineEdit(centralwidget);
@@ -71,10 +72,13 @@ public:
         countlabel = new QLabel(centralwidget);
         countlabel->setObjectName("countlabel");
         countlabel->setGeometry(QRect(190, 100, 241, 41));
+        statsButton = new QPushButton(centralwidget);
+        statsButton->setObjectName("statsButton");
+        statsButton->setGeometry(QRect(680, 550, 93, 28));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 800, 25));
+        menubar->setGeometry(QRect(0, 0, 799, 25));
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName("statusbar");
@@ -93,6 +97,7 @@ public:
         restartButton->setText(QCoreApplication::translate("MainWindow", "\351\207\215\346\226\260\345\274\200\345\247\213", nullptr));
         surrenderButton->setText(QCoreApplication::translate("MainWindow", "\346\212\225\351\231\215", nullptr));
         countlabel->setText(QString());
+        statsButton->setText(QCoreApplication::translate("MainWindow", "\347\273\237\350\256\241\346\225\260\346\215\256", nullptr));
     } // retranslateUi
 
 };

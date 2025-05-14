@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "statsdialog.h"
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -32,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
     srand(QTime::currentTime().msec());
     LoadCharacters();
 
+    statsManager = new StatsManager(this);
 
     if (!characters.isEmpty()) {
         answer = characters[rand() % characters.size()];
@@ -102,6 +104,7 @@ void MainWindow::on_guessButton_clicked()
     ui->historylist->addItem(item);
 
     if (matched->name == answer.name) {
+
         ongameend(true);
     }
 
@@ -218,6 +221,7 @@ void MainWindow::on_surrenderButton_clicked()
 
 void MainWindow::ongameend(bool success)
 {
+    statsManager->recordGame(success, currentGuessCount);
     showEndGameDialog(success, answer);
     ui->suggestionlist->hide();
     ui->lineEdit->setEnabled(false);
@@ -258,3 +262,10 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
         break;
     }
 }
+
+void MainWindow::on_statsButton_clicked()
+{
+    StatsDialog dialog(statsManager, this);
+    dialog.exec();
+}
+

@@ -1,0 +1,12 @@
+release/character.o
+release/gameendmsg.o
+release/gamelogic.o
+release/guessitemdelegate.o
+release/guessresult.o
+release/main.o
+release/mainwindow.o
+release/statsdialog.o
+release/statsmanager.o
+release/moc_mainwindow.o
+release/moc_statsdialog.o
+release/moc_statsmanager.o

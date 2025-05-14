@@ -15,7 +15,9 @@ SOURCES += \
     guessitemdelegate.cpp \
     guessresult.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    statsdialog.cpp \
+    statsmanager.cpp
 
 HEADERS += \
     character.h \
@@ -23,10 +25,13 @@ HEADERS += \
     gamelogic.h \
     guessitemdelegate.h \
     guessresult.h \
-    mainwindow.h
+    mainwindow.h \
+    statsdialog.h \
+    statsmanager.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    statsdialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -5,6 +5,7 @@
 #include "guessresult.h"
 #include "gamelogic.h"
 #include "guessitemdelegate.h"
+#include "statsmanager.h"
 #include "gameendmsg.h"
 #include <QMainWindow>
 #include <QVector>
@@ -36,6 +37,8 @@ private slots:
 
     void on_surrenderButton_clicked();
 
+    void on_statsButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     void LoadCharacters();
@@ -46,6 +49,7 @@ private:
     Character answer;
     int maxGuesses = 5;
     int currentGuessCount = 0;
+    StatsManager *statsManager;
 
 protected:
     void keyPressEvent(QKeyEvent* event) override;
