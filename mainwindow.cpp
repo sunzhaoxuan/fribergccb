@@ -17,7 +17,127 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    setWindowTitle("ccb");
+    this->setWindowFlags(Qt::FramelessWindowHint | Qt::Window);
+
+    ui->titlebar->setStyleSheet(R"(
+    QWidget#titleBar {
+        background-color: #eeeeee;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+    }
+)");
+
+    ui->minimizeButton->setStyleSheet(R"(
+    QPushButton {
+        background-color: transparent;
+        border: none;
+        font-size: 18px;
+    }
+    QPushButton:hover {
+        background-color: #cccccc;
+    }
+)");
+
+    ui->closeButton->setStyleSheet(R"(
+    QPushButton {
+        background-color: transparent;
+        border: none;
+        font-size: 18px;
+    }
+    QPushButton:hover {
+        background-color: #e57373;
+        color: white;
+    }
+)");
+
+    ui->historylist->setStyleSheet(R"(
+QListWidget {
+    background-color: #fdfdfd;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 4px;
+    font-family: "Microsoft YaHei";
+    font-size: 14px;
+    color: #333;
+}
+
+QListWidget::item {
+    padding: 10px 8px;
+    margin: 4px 0;
+    border-radius: 6px;
+}
+
+QListWidget::item:hover {
+    background-color: #e0f2f1;
+    color: #004d40;
+}
+
+QListWidget::item:selected {
+    background-color: #a5d6a7;
+    color: black;
+}
+
+QScrollBar:vertical {
+    border: none;
+    background: transparent;
+    width: 8px;
+    margin: 4px 0;
+}
+
+QScrollBar::handle:vertical {
+    background: #c8e6c9;
+    min-height: 20px;
+    border-radius: 4px;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0;
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
+}
+)");
+
+    this->setStyleSheet(R"(
+    QLineEdit#lineEdit {
+        border: 2px solid #ccc;
+        border-radius: 10px;
+        padding: 8px 12px;
+        font-size: 16px;
+        background-color: #fdfdfd;
+    }
+
+    QLineEdit#lineEdit:focus {
+        border: 2px solid #66ccff;
+        background-color: #f0faff;
+    }
+
+    QListWidget#suggestionlist {
+        border: 1px solid #bbb;
+        border-radius: 8px;
+        background-color: #ffffff;
+        font-size: 14px;
+        padding: 4px;
+    }
+
+    QListWidget#suggestionlist::item {
+        padding: 6px 10px;
+    }
+
+    QListWidget#suggestionlist::item:selected {
+        background-color: #cceeff;
+        font-weight: bold;
+        color: #000;
+        border-radius: 5px;
+    }
+
+    QListWidget#suggestionlist::item:hover {
+        background-color: #e0f7ff;
+    }
+)");
 
     ui->suggestionlist->setStyleSheet("QListWidget { border: 1px solid gray; background: white; }");
     ui->suggestionlist->hide();
@@ -41,6 +161,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->lineEdit, &QLineEdit::textChanged, this, &MainWindow::UpdateSuggestionsSlot);
     connect(ui->suggestionlist, &QListWidget::itemClicked, this, &MainWindow::onSuggestionClickedSlot);
+    connect(ui->closeButton, &QPushButton::clicked, this, &QWidget::close);
+    connect(ui->minimizeButton, &QPushButton::clicked, this, &QWidget::showMinimized);
 }
 
 MainWindow::~MainWindow()
@@ -268,4 +390,29 @@ void MainWindow::on_statsButton_clicked()
     StatsDialog dialog(statsManager, this);
     dialog.exec();
 }
+
+
+void MainWindow::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        dragging = true;
+        dragPosition = event->globalPos() - this->frameGeometry().topLeft();
+        event->accept();
+    }
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    if (dragging && (event->buttons() & Qt::LeftButton)) {
+        this->move(event->globalPos() - dragPosition);
+        event->accept();
+    }
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *event)
+{
+    Q_UNUSED(event);
+    dragging = false;
+}
+
 

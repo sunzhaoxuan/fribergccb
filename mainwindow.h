@@ -51,7 +51,13 @@ private:
     int currentGuessCount = 0;
     StatsManager *statsManager;
 
+    QPoint dragPosition;
+    bool dragging = false;
+
 protected:
     void keyPressEvent(QKeyEvent* event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
 };
 #endif // MAINWINDOW_H

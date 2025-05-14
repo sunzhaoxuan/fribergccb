@@ -51,7 +51,7 @@ public:
         resetButton->setGeometry(QRect(300, 330, 93, 28));
         label = new QLabel(StatsDialog);
         label->setObjectName("label");
-        label->setGeometry(QRect(170, 10, 61, 21));
+        label->setGeometry(QRect(170, 10, 81, 21));
         label_2 = new QLabel(StatsDialog);
         label_2->setObjectName("label_2");
         label_2->setGeometry(QRect(30, 50, 69, 19));
